@@ -7,46 +7,43 @@ int main(int argc, char* argv[]){
 }
 
 void displayHelp(){
-	char* displayStr = "alarm-cli [-h, -m, -s]\n\nOptions:\n-h <HOURS>\n-m <MINUTES>\n-s <SECONDS>";
+	char* displayStr = "Alarm CLI v1.0 : Shane Brown\n\nusage: [-h HOURS, -m MINS, -s SECS] TIME [-d] DAEMON [-n NAME] [-i ALARM INFO]";
 
 	printf("%s\n", displayStr);
 }
 
 void parseArgs(int argc, char* argv[]){
+	int anyArgs = 0;
 
-	int gnuargs;
+	int opt;
+	while((opt = getopt(argc, argv, "h:m:s:dn:i:")) != -1){
+		anyArgs = 1;
+		switch(opt){
+			case 'h':
+				printf(optarg);
+				break;
+			case 'm':
+				printf(optarg);
+				break;
+			case 's':
+				printf(optarg);
+				break;
+			case 'd':
+				printf("DAEMON MODE");
+				break;
+			case 'n':
+				printf("Name: %s\n", optarg);
+				break;
+			case 'i':
+				printf("Info: %s\n", optarg);
+				break;
+			default:
+				printf("Invalid Arg");
+		}
 
-	struct option long_options[] = 
-	{
-		{"hours", optional_argument, 0, 'h'}, 
-		{"minutes", optional_argument, 0, 'm'},
-		{"seconds", optional_argument, 0, 's'},
-		{0, 0, 0, 0}
-	};
+	}
 
-	int option_index;
-
-    while(1){
-        gnuargs = getopt_long(argc, argv, "h:m:s:", long_options, &option_index);
-
-        if(gnuargs == -1){
-            break;
-        }else{
-            
-            switch(gnuargs){
-                case 'h':
-                    printf("option -h with value `%s'\n", optarg);
-                    break;
-                case 'm':
-                    printf("option -m with value `%s'\n", optarg);
-                    break;
-                case 's':
-                    printf("option -s with value `%s'\n", optarg);
-                    break; 
-                default:
-                    printf("No args");
-            }
-        }
-    }
-	
+	if(anyArgs < 1){
+		displayHelp();
+	}
 }
