@@ -9,3 +9,7 @@ class Alarm:
 
     def setTime(self, h, m, s):
         self.time = str(h) + str(m) + str(s)
+
+    @staticmethod
+    def createAlarm(h, m, s)
+        Alarm al = Alarm(str(h) + "h" + str(m) + "m" + str(s) + "s"
