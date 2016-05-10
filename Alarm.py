@@ -11,5 +11,6 @@ class Alarm:
         self.time = str(h) + str(m) + str(s)
 
     @staticmethod
-    def createAlarm(h, m, s)
-        Alarm al = Alarm(str(h) + "h" + str(m) + "m" + str(s) + "s"
+    def createAlarm(h, m, s):
+        al = Alarm(str(h) + "h" + str(m) + "m" + str(s) + "s")
+	return al

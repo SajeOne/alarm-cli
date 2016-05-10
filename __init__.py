@@ -14,7 +14,7 @@ args = parseArguments()
 
 if args.action:
     if args.action == "set":
-        Alarm al = Alarm.setAlarm(0, 10, 0)
+        al = Alarm.createAlarm(0, 10, 0)
     elif args.action == "list":
         print("list")
     elif args.action == "del":
@@ -23,7 +23,3 @@ if args.action:
         print("daemon")
     else:
         print("Unrecognized action")
-
-test = Alarm("now", "a new alarm")
-
-print(test.getTime())
