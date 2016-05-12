@@ -17,10 +17,24 @@ def saveAlarms(alarms, outFile):
         wFile.write(jsonFile)
 
 def loadAlarms(jsonFile):
+    alarms = list()
+
     with open(jsonFile) as rFile:
         data = rFile.read()
 
-    print(data)
+    jsonData = json.loads(data)
+
+    for item in jsonData:
+	curAlarm = Alarm.alarmFromEpoch(item['timestamp'], item['description'])
+	alarms.append(curAlarm)
+
+    return alarms
+
+def listAlarms(alarms):
+    for index, item in enumerate(alarms):
+	print(type(item))
+	print("Alarm " + str(index) + "\nTimestamp: " + str(item['timestamp']) + " Desc: " + str(item['description']))
+	
 
 def userPrompt():
     values = {}
@@ -30,17 +44,21 @@ def userPrompt():
     values['minute'] = minute
     second = input("How many seconds?: ")
     values['second'] = second
-    description = input("A description for this alarm: ")
+    description = raw_input("A description for this alarm: ")
     values['desc'] = description
 
     return values
 
 args = parseArguments()
 
-alarms = list()
+try:
+    alarms = loadAlarms("test.json")
+except:
+    alarms = list()
 
 if args.action:
     if args.action == "set":
+	print(alarms)
         if not args.time:
             info = userPrompt()
             al = Alarm(info['hour'], info['minute'], info['second'], info['desc'])
@@ -49,7 +67,7 @@ if args.action:
         alarms.append(al)
         saveAlarms(alarms, "test.json")
     elif args.action == "list":
-        print("list")
+        listAlarms(alarms)
     elif args.action == "del":
         print("del")
     elif args.action == "daemon":
