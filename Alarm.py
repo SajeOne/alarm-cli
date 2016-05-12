@@ -7,10 +7,11 @@ class Alarm:
     def getTime(self):
         return self.time
 
+    @classmethod
     def setTime(self, h, m, s):
         self.time = str(h) + str(m) + str(s)
 
     @staticmethod
-    def createAlarm(h, m, s):
-        al = Alarm(str(h) + "h" + str(m) + "m" + str(s) + "s")
-	return al
+    def createAlarm(h, m, s, desc):
+        al = Alarm(str(h) + "h" + str(m) + "m" + str(s) + "s", desc)
+        return al
