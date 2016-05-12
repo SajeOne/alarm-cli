@@ -43,9 +43,9 @@ if args.action:
     if args.action == "set":
         if not args.time:
             info = userPrompt()
-            al = Alarm.createAlarm(info['hour'], info['minute'], info['second'], info['desc'])
+            al = Alarm(info['hour'], info['minute'], info['second'], info['desc'])
         else:
-            al = Alarm.createAlarm(0, 10, 0, "test desc")
+            al = Alarm(0, 10, 0, "test desc")
         alarms.append(al)
         saveAlarms(alarms, "test.json")
     elif args.action == "list":

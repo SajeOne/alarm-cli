@@ -1,9 +1,9 @@
-class Alarm:
-    time = "-1"
+import calendar
+import time
 
-    def __init__(self, time, description):
-        self.time = time
-        self.description = description
+class Alarm:
+    timestamp = ""
+
     def getTime(self):
         return self.time
 
@@ -11,7 +11,14 @@ class Alarm:
     def setTime(self, h, m, s):
         self.time = str(h) + str(m) + str(s)
 
-    @staticmethod
-    def createAlarm(h, m, s, desc):
-        al = Alarm(str(h) + "h" + str(m) + "m" + str(s) + "s", desc)
-        return al
+    def timeToEpoch(h, m, s):
+        seconds = ((h * 60) * 60) + (s * 60) + s
+        seconds = seconds + calendar.timegm(time.gmtime())
+
+        print(seconds)
+        return seconds
+
+
+    def __init__(self, h, m, s, description):
+        self.timestamp = timeToEpoch(h, m, s)
+        self.description = description
