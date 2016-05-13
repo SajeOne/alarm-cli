@@ -3,6 +3,7 @@ import time
 
 class Alarm:
     timestamp = ""
+    description = ""
 
     def getTime(self):
         return self.time
@@ -13,24 +14,23 @@ class Alarm:
 
     @staticmethod
     def timeToEpoch(h, m, s):
-        seconds = ((h * 60) * 60) + (s * 60) + s
-        seconds = seconds + calendar.timegm(time.gmtime())
+        seconds = ((int(h) * 60) * 60) + (int(m) * 60) + int(s)
 
-        print(seconds)
+        seconds = seconds + int(calendar.timegm(time.gmtime()))
         return seconds
 
 
     def __init__(self, epoch, description):
-	self.timestamp = epoch
-	self.description = description
+        self.timestamp = epoch
+        self.description = description
 
     @staticmethod
     def alarmFromTime(h, m, s, description):
-	epoch = self.timeToEpoch(h, m, s)
-	al = Alarm(epoch, description)
-	return al
-    
+        epoch = Alarm.timeToEpoch(h, m, s)
+        al = Alarm(epoch, description)
+        return al
+
     @staticmethod
     def alarmFromEpoch(epoch, description):
-	al = Alarm(epoch, description)
-	return al	
+        al = Alarm(epoch, description)
+        return al

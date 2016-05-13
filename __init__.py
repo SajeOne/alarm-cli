@@ -2,7 +2,10 @@
 
 import argparse
 import json
+import sys
 from Alarm import Alarm
+
+SAVE_FILE = "test.json"
 
 def parseArguments():
     parser = argparse.ArgumentParser(description="Simple alarm app for timespans and dates")
@@ -25,26 +28,33 @@ def loadAlarms(jsonFile):
     jsonData = json.loads(data)
 
     for item in jsonData:
-	curAlarm = Alarm.alarmFromEpoch(item['timestamp'], item['description'])
-	alarms.append(curAlarm)
+        curAlarm = Alarm.alarmFromEpoch(item['timestamp'], item['description'])
+        alarms.append(curAlarm)
 
     return alarms
 
 def listAlarms(alarms):
     for index, item in enumerate(alarms):
-	print(type(item))
-	print("Alarm " + str(index) + "\nTimestamp: " + str(item['timestamp']) + " Desc: " + str(item['description']))
-	
+        print("Alarm " + str(index + 1) + "\nTimestamp: " + str(item.timestamp) + " Desc: " + str(item.description))
+
 
 def userPrompt():
     values = {}
-    hour = input("How many hours?: ")
+    hour = int(input("How many hours?: "))
     values['hour'] = hour
-    minute = input("How many minutes?: ")
+    minute = int(input("How many minutes?: "))
+    if minute > 59:
+        print("You can only have 59 minutes, use hours for longer time span")
+        return False
+
     values['minute'] = minute
-    second = input("How many seconds?: ")
+    second = int(input("How many seconds?: "))
+    if second > 59:
+        print("You can only have 59 seconds, use minutes for longer time span")
+        return False
+
     values['second'] = second
-    description = raw_input("A description for this alarm: ")
+    description = int(input("A description for this alarm: "))
     values['desc'] = description
 
     return values
@@ -52,24 +62,35 @@ def userPrompt():
 args = parseArguments()
 
 try:
-    alarms = loadAlarms("test.json")
+    alarms = loadAlarms(SAVE_FILE)
 except:
     alarms = list()
 
 if args.action:
     if args.action == "set":
-	print(alarms)
         if not args.time:
             info = userPrompt()
-            al = Alarm(info['hour'], info['minute'], info['second'], info['desc'])
+            if not info:
+                sys.exit(1)
+
+            al = Alarm.alarmFromTime(info['hour'], info['minute'], info['second'], info['desc'])
         else:
-            al = Alarm(0, 10, 0, "test desc")
+            al = Alarm.alarmFromTime(0, 10, 0, "test desc")
         alarms.append(al)
-        saveAlarms(alarms, "test.json")
+        saveAlarms(alarms, SAVE_FILE)
     elif args.action == "list":
         listAlarms(alarms)
     elif args.action == "del":
-        print("del")
+        listAlarms(alarms)
+        num = int(input("Which alarm to delete(by ID)?: "))
+        if len(alarms) < num or num < 0:
+            print("Alarm ID does not exist")
+            sys.exit(1)
+        
+        alarms.pop(num - 1)
+
+        saveAlarms(alarms, )
+        print("Alarm Deleted")
     elif args.action == "daemon":
         print("daemon")
     else:
