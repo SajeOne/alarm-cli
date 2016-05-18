@@ -1,18 +1,9 @@
 #!/usr/bin/env python
 
 import socket
-import sys
 
+message = input("Enter Message: ")
 
-HOST = '127.0.0.1'
-PORT = 5673
-s = socket.socket()
-s.connect((HOST, PORT))
-
-while 1:
-    msg = input("Command To Send: ")
-    msg = msg.encode('UTF-8')
-    if msg == "close":
-       s.close()
-       sys.exit(0)
-    s.send(msg)
+clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientsocket.connect(('localhost', 8089))
+clientsocket.send(message.encode('UTF-8'))

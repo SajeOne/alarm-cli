@@ -1,31 +1,20 @@
 #!/usr/bin/env python
 
 import socket
-from threading import Thread
 
+class Server:
+    \
+    queue
 
-MAX_LENGTH = 4096
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.bind(('localhost', 8089))
+    serversocket.listen(5) # become a server socket, maximum 5 connections
 
-def handle(clientsocket):
-  while 1:
-    buf = clientsocket.recv(MAX_LENGTH)
-    if buf.decode('UTF-8') == 'kill':
-        print("Killing Daemon..")
-        return
-    elif buf.decode('UTF-8') != '':
-        print(buf)
-
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-PORT = 5673
-HOST = '127.0.0.1'
-
-serversocket.bind((HOST, PORT))
-serversocket.listen(10)
-
-while 1:
-    #accept connections from outside
-    (clientsocket, address) = serversocket.accept()
-
-    ct = Thread(target=handle, args=(clientsocket,))
-    ct.run()
+    @classmethod
+    def startServer():
+        while True:
+            connection, address = serversocket.accept()
+            buf = connection.recv(64)
+            if len(buf) > 0:
+                print(buf)
+                buf = ""
