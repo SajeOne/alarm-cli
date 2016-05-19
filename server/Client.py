@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 import socket
+from Server import Server
+
+server = Server()
+server.startServer()
 
 message = input("Enter Message: ")
 
