@@ -5,10 +5,10 @@ from threading import Thread
 
 class Server:
     queue = list()
-    global t
+    t = None
 
     @classmethod
-    def handle():
+    def handle(clientsocket):
         while True:
             connection, address = serversocket.accept()
             buf = connection.recv(64)
@@ -23,14 +23,11 @@ class Server:
         serversocket.bind(('localhost', 8089))
         serversocket.listen(5) # become a server socket, maximum 5 connections     
 
+        (clientsocket, address) = serversocket.accept()
+
+        t = Thread(target=self.handle, args=(clientsocket,))
         t.start()
 
     @classmethod
     def stopServer(self):
         t.stop()
-
-    def __init__(self):
-        t = Thread(target=self.handle)
-
-
-

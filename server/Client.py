@@ -3,8 +3,11 @@
 import socket
 from Server import Server
 
+print("Finished imports")
 server = Server()
+print("server declared")
 server.startServer()
+print("server started")
 
 message = input("Enter Message: ")
 

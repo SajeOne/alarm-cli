@@ -54,7 +54,7 @@ def userPrompt():
         return False
 
     values['second'] = second
-    description = int(input("A description for this alarm: "))
+    description = input("A description for this alarm: ")
     values['desc'] = description
 
     return values
@@ -89,7 +89,7 @@ if args.action:
         
         alarms.pop(num - 1)
 
-        saveAlarms(alarms, )
+        saveAlarms(alarms, SAVE_FILE)
         print("Alarm Deleted")
     elif args.action == "daemon":
         print("daemon")
