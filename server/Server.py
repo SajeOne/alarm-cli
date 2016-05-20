@@ -4,29 +4,28 @@ import socket
 from threading import Thread
 
 class Server:
+    port = 8089
     queue = list()
     t = None
 
     @classmethod
-    def handle(clientsocket):
+    def handle(self, serversocket):
         while True:
             connection, address = serversocket.accept()
             buf = connection.recv(64)
             if len(buf) > 0:
                 print(buf)
-                queue.append(buf.decode("UTF-8"))
+                self.queue.append(buf.decode("UTF-8"))
                 buf = ""
 
     @classmethod
     def startServer(self):
         serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        serversocket.bind(('localhost', 8089))
+        serversocket.bind(('localhost', self.port))
         serversocket.listen(5) # become a server socket, maximum 5 connections     
         print("Listening")
 
-        (clientsocket, address) = serversocket.accept()
-
-        t = Thread(target=self.handle, args=(clientsocket,))
+        t = Thread(target=self.handle, args=(serversocket,))
         t.start()
 
     @classmethod

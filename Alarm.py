@@ -1,5 +1,6 @@
 import calendar
 import time
+import json
 
 class Alarm:
     timestamp = ""
@@ -34,3 +35,47 @@ class Alarm:
     def alarmFromEpoch(epoch, description):
         al = Alarm(epoch, description)
         return al
+
+    @staticmethod
+    def loadAlarms(jsonFile):
+        alarms = list()
+
+        with open(jsonFile) as rFile:
+            data = rFile.read()
+
+        jsonData = json.loads(data)
+
+        for item in jsonData:
+            curAlarm = Alarm.alarmFromEpoch(item['timestamp'], item['description'])
+            alarms.append(curAlarm)
+
+
+    @staticmethod
+    def saveAlarms(alarms, outFile):
+        jsonFile = json.dumps([ob.__dict__ for ob in alarms], indent=4)
+        with open(outFile, "w") as wFile:
+            wFile.write(jsonFile)
+
+        @staticmethod
+        def loadAlarms(jsonFile):
+            alarms = list()
+
+            with open(jsonFile) as rFile:
+                data = rFile.read()
+
+            jsonData = json.loads(data)
+
+            for item in jsonData:
+                curAlarm = Alarm.alarmFromEpoch(item['timestamp'], item['description'])
+                alarms.append(curAlarm)
+
+            return alarms
+
+        @staticmethod
+        def listAlarms(alarms):
+            for index, item in enumerate(alarms):
+                print("Alarm " + str(index + 1) + "\nTimestamp: " + str(item.timestamp) + " Desc: " + str(item.description))
+
+        @staticmethod
+        def checkAlarms(alarms):
+            print(alarms)
