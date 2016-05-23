@@ -51,10 +51,18 @@ if args.action:
                 sys.exit(1)
 
             al = Alarm.alarmFromTime(info['hour'], info['minute'], info['second'], info['desc'])
+            print(type(al))
+            print("alarms: " + str(type(al)))
+            alarms.append(al)
+            Alarm.saveAlarms(alarms, SAVE_FILE)
         else:
             al = Alarm.alarmFromTime(0, 10, 0, "test desc")
-        alarms.append(al)
-        Alarm.saveAlarms(alarms, SAVE_FILE)
+            alarms.append(al)
+            Alarm.saveAlarms(alarms, SAVE_FILE)
+
+                
+        client = Client()
+        client.sendMessage("reload")
     elif args.action == "list":
         Alarm.listAlarms(alarms)
     elif args.action == "del":
@@ -72,6 +80,10 @@ if args.action:
         daemon = Server()
         daemon.startServer()
         print("daemon")
+    elif args.action == "stop":
+        client = Client()
+        client.sendMessage("stop")
+
     elif args.action == "testclient":
         client = Client()
         client.sendMessage("testmsg")

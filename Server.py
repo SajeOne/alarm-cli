@@ -16,6 +16,7 @@ class Server:
         while True:
             connection, address = serversocket.accept()
             buf = connection.recv(64)
+            buf = buf.decode('UTF-8') 
             if len(buf) > 0:
                 if buf == "reload":
                     alarms = Alarm.loadAlarms(self.jsonFile)

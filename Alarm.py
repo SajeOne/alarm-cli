@@ -29,6 +29,7 @@ class Alarm:
     def alarmFromTime(h, m, s, description):
         epoch = Alarm.timeToEpoch(h, m, s)
         al = Alarm(epoch, description)
+        print(type(al))
         return al
 
     @staticmethod
@@ -48,6 +49,7 @@ class Alarm:
         for item in jsonData:
             curAlarm = Alarm.alarmFromEpoch(item['timestamp'], item['description'])
             alarms.append(curAlarm)
+        return alarms
 
 
     @staticmethod
