@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
 import socket
+import subprocess
+from time import sleep
 from threading import Thread
 from Alarm import Alarm
 
 class Server:
     port = 8089
     t = None
-    alarms = None
     jsonFile = "test.json"
 
     @classmethod
-    def handle(self, serversocket):
-        alarms = Alarm.loadAlarms(self.jsonFile)
+    def handleMessages(self, serversocket):
         while True:
             connection, address = serversocket.accept()
             buf = connection.recv(64)
@@ -26,6 +26,26 @@ class Server:
                     break
                 print(buf)
                 buf = ""
+            
+
+    @classmethod
+    def handleSoundingAlarm(self):
+        while True:
+            waitForSound = False
+            alarms = Alarm.loadAlarms(self.jsonFile)
+            if not alarms:
+                continue
+
+            dueAlarms = Alarm.checkAlarms(alarms)
+            for item in dueAlarms:
+                waitForSound = True
+                subprocess.call(['notify-send', 'Alarm Sounding', item.description])
+                print("Alarm sounding! Desc: " + item.description + "\n")
+
+            if waitForSound:
+                sleep(5)
+                waitForSound = False
+
 
     @classmethod
     def startServer(self):
@@ -34,9 +54,15 @@ class Server:
         serversocket.listen(5) # become a server socket, maximum 5 connections     
         print("Listening")
 
-        t = Thread(target=self.handle, args=(serversocket,))
-        t.start()
+        serverThread = Thread(target=self.handleMessages, args=(serversocket,))
+        serverThread.start()
+
+        soundThread = Thread(target=self.handleSoundingAlarm)
+        soundThread.start()
 
     @classmethod
     def stopServer(self):
         t.stop()
+
+    def __init__(self):
+        self.alarms = Alarm.loadAlarms(self.jsonFile)

@@ -1,17 +1,16 @@
 import calendar
 import time
 import json
+from json.decoder import JSONDecodeError
+import datetime
 
 class Alarm:
     timestamp = ""
     description = ""
 
-    def getTime(self):
-        return self.time
-
-    @classmethod
-    def setTime(self, h, m, s):
-        self.time = str(h) + str(m) + str(s)
+    def __init__(self, epoch, description):
+        self.timestamp = epoch
+        self.description = description
 
     @staticmethod
     def timeToEpoch(h, m, s):
@@ -20,16 +19,10 @@ class Alarm:
         seconds = seconds + int(calendar.timegm(time.gmtime()))
         return seconds
 
-
-    def __init__(self, epoch, description):
-        self.timestamp = epoch
-        self.description = description
-
     @staticmethod
     def alarmFromTime(h, m, s, description):
         epoch = Alarm.timeToEpoch(h, m, s)
         al = Alarm(epoch, description)
-        print(type(al))
         return al
 
     @staticmethod
@@ -44,13 +37,15 @@ class Alarm:
         with open(jsonFile) as rFile:
             data = rFile.read()
 
-        jsonData = json.loads(data)
+        try:
+            jsonData = json.loads(data)
+        except JSONDecodeError:
+            return None
 
         for item in jsonData:
             curAlarm = Alarm.alarmFromEpoch(item['timestamp'], item['description'])
             alarms.append(curAlarm)
         return alarms
-
 
     @staticmethod
     def saveAlarms(alarms, outFile):
@@ -58,26 +53,18 @@ class Alarm:
         with open(outFile, "w") as wFile:
             wFile.write(jsonFile)
 
-        @staticmethod
-        def loadAlarms(jsonFile):
-            alarms = list()
+    @staticmethod
+    def listAlarms(alarms):
+        for index, item in enumerate(alarms):
+            print("Alarm " + str(index + 1) + "\nTimestamp: " + str(item.timestamp) + " Desc: " + str(item.description))
 
-            with open(jsonFile) as rFile:
-                data = rFile.read()
+    @staticmethod
+    def checkAlarms(alarms):
+        retAlarms = list()
+        curTime = datetime.datetime.now()
+        for item in alarms:
+            alarmTime = datetime.datetime.fromtimestamp(int(item.timestamp))
+            if alarmTime <= curTime:
+                retAlarms.append(item)
 
-            jsonData = json.loads(data)
-
-            for item in jsonData:
-                curAlarm = Alarm.alarmFromEpoch(item['timestamp'], item['description'])
-                alarms.append(curAlarm)
-
-            return alarms
-
-        @staticmethod
-        def listAlarms(alarms):
-            for index, item in enumerate(alarms):
-                print("Alarm " + str(index + 1) + "\nTimestamp: " + str(item.timestamp) + " Desc: " + str(item.description))
-
-        @staticmethod
-        def checkAlarms(alarms):
-            print(alarms)
+        return retAlarms

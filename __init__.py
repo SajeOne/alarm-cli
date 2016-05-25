@@ -51,8 +51,6 @@ if args.action:
                 sys.exit(1)
 
             al = Alarm.alarmFromTime(info['hour'], info['minute'], info['second'], info['desc'])
-            print(type(al))
-            print("alarms: " + str(type(al)))
             alarms.append(al)
             Alarm.saveAlarms(alarms, SAVE_FILE)
         else:
@@ -81,8 +79,12 @@ if args.action:
         daemon.startServer()
         print("daemon")
     elif args.action == "stop":
-        client = Client()
-        client.sendMessage("stop")
+        try:
+            client = Client()
+            client.sendMessage("stop")
+        except ConnectionRefusedError:
+            print("Connection Refused. (is the daemon running?)")
+            sys.exit(1)
 
     elif args.action == "testclient":
         client = Client()
