@@ -9,5 +9,5 @@ setup(name='alarm-cli',
         author='Shane "SajeOne" Brown',
         author_email='contact@shane-brown.ca',
         license='GPL3',
-        packages['alarm-cli'],
+        packages=['alarm-cli'],
         zip_safe=False)
