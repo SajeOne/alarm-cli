@@ -7,7 +7,13 @@ class Client:
 
     @classmethod
     def sendMessage(self, message):
-        clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        clientsocket.connect(('localhost', self.port))
-        clientsocket.send(message.encode('UTF-8'))
-        clientsocket.close()
+        try:
+            clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            clientsocket.connect(('localhost', self.port))
+            clientsocket.send(message.encode('UTF-8'))
+            clientsocket.close()
+        except ConnectionRefusedError:
+            print("Connection Refused. (is the daemon running?)")
+            return False
+
+        return True

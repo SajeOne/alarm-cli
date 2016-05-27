@@ -69,6 +69,8 @@ if args.action:
         if len(alarms) < num or num < 0:
             print("Alarm ID does not exist")
             sys.exit(1)
+    elif args.action == "clear":
+        
         
         alarms.pop(num - 1)
 
@@ -79,11 +81,8 @@ if args.action:
         daemon.startServer()
         print("daemon")
     elif args.action == "stop":
-        try:
-            client = Client()
-            client.sendMessage("stop")
-        except ConnectionRefusedError:
-            print("Connection Refused. (is the daemon running?)")
+        client = Client()
+        if not client.sendMessage("stop"):
             sys.exit(1)
 
     elif args.action == "testclient":

@@ -10,6 +10,9 @@ __pycache__/
 *.bak
 *.json
 
+# packaging
+package/
+
 # Distribution / packaging
 .Python
 env/

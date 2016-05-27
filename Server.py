@@ -8,8 +8,10 @@ from Alarm import Alarm
 
 class Server:
     port = 8089
-    t = None
+    serverThread = None
+    soundThread = None
     jsonFile = "test.json"
+    stopFlag = False
 
     @classmethod
     def handleMessages(self, serversocket):
@@ -23,6 +25,7 @@ class Server:
                     print("alarms reloaded")
                 elif buf == "stop":
                     print("Stopping..")
+                    self.stopFlag = True
                     break
                 print(buf)
                 buf = ""
@@ -31,6 +34,10 @@ class Server:
     @classmethod
     def handleSoundingAlarm(self):
         while True:
+            if self.stopFlag:
+                break
+
+
             waitForSound = False
             alarms = Alarm.loadAlarms(self.jsonFile)
             if not alarms:
@@ -39,7 +46,8 @@ class Server:
             dueAlarms = Alarm.checkAlarms(alarms)
             for item in dueAlarms:
                 waitForSound = True
-                subprocess.call(['notify-send', 'Alarm Sounding', item.description])
+                subprocess.call(['notify-send', '--expire-time=3000', 'Alarm Sounding', item.description])
+                Alarm.playAlarm()
                 print("Alarm sounding! Desc: " + item.description + "\n")
 
             if waitForSound:
@@ -62,7 +70,8 @@ class Server:
 
     @classmethod
     def stopServer(self):
-        t.stop()
+        self.serverThread.stop()
+        self.soundThread.stop()
 
     def __init__(self):
         self.alarms = Alarm.loadAlarms(self.jsonFile)
