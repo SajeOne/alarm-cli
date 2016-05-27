@@ -1,6 +1,7 @@
 import calendar
 import time
 import json
+import wx
 from json.decoder import JSONDecodeError
 import datetime
 
@@ -11,6 +12,12 @@ class Alarm:
     def __init__(self, epoch, description):
         self.timestamp = epoch
         self.description = description
+
+    @staticmethod
+    def playAlarm():
+        sound = wx.Sound('assets/alarm.wav')
+        sound.Play(wx.SOUND_ASYNC)
+
 
     @staticmethod
     def timeToEpoch(h, m, s):
