@@ -8,6 +8,7 @@ __pycache__/
 
 # backup
 *.bak
+*.json
 
 # Distribution / packaging
 .Python
