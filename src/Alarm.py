@@ -1,7 +1,7 @@
 import calendar
 import time
 import json
-import wx
+#import wx // Temporarily remove wx dependency
 from json.decoder import JSONDecodeError
 import datetime
 
@@ -13,10 +13,10 @@ class Alarm:
         self.timestamp = epoch
         self.description = description
 
-    @staticmethod
-    def playAlarm():
-        sound = wx.Sound('assets/alarm.wav')
-        sound.Play(wx.SOUND_ASYNC)
+#    @staticmethod
+#    def playAlarm():
+#        sound = wx.Sound('assets/alarm.wav')
+#        sound.Play(wx.SOUND_ASYNC)
 
 
     @staticmethod
@@ -41,8 +41,11 @@ class Alarm:
     def loadAlarms(jsonFile):
         alarms = list()
 
-        with open(jsonFile) as rFile:
-            data = rFile.read()
+        try:
+            with open(jsonFile) as rFile:
+                data = rFile.read()
+        except FileNotFoundError:
+            return None
 
         try:
             jsonData = json.loads(data)

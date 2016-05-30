@@ -2,9 +2,9 @@
 
 import argparse
 import sys
-from Alarm import Alarm
-from Server import Server
-from Client import Client
+from alarmlib import Alarm
+from alarmlib import Server
+from alarmlib import Client
 
 SAVE_FILE = "test.json"
 
@@ -38,9 +38,9 @@ def userPrompt():
 
 args = parseArguments()
 
-try:
-    alarms = Alarm.loadAlarms(SAVE_FILE)
-except:
+alarms = Alarm.loadAlarms(SAVE_FILE)
+
+if not alarms:
     alarms = list()
 
 if args.action:
@@ -69,9 +69,11 @@ if args.action:
         if len(alarms) < num or num < 0:
             print("Alarm ID does not exist")
             sys.exit(1)
+
+        alarms.pop(num - 1)
+        Alarm.saveAlarms(alarms, SAVE_FILE)
+        print("Alarm Deleted")
     elif args.action == "clear":
-        
-        
         alarms.pop(num - 1)
 
         Alarm.saveAlarms(alarms, SAVE_FILE)

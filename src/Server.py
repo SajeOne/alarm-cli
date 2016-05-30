@@ -47,7 +47,7 @@ class Server:
             for item in dueAlarms:
                 waitForSound = True
                 subprocess.call(['notify-send', '--expire-time=3000', 'Alarm Sounding', item.description])
-                Alarm.playAlarm()
+#                Alarm.playAlarm()
                 print("Alarm sounding! Desc: " + item.description + "\n")
 
             if waitForSound:
