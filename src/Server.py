@@ -4,7 +4,7 @@ import socket
 import subprocess
 from time import sleep
 from threading import Thread
-from Alarm import Alarm
+from alarmlib.Alarm import Alarm
 
 class Server:
     port = 8089

@@ -2,9 +2,9 @@
 
 import argparse
 import sys
-from alarmlib import Alarm
-from alarmlib import Server
-from alarmlib import Client
+from alarmlib.Alarm import Alarm
+from alarmlib.Server import Server
+from alarmlib.Client import Client
 
 SAVE_FILE = "test.json"
 
