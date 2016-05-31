@@ -17,7 +17,7 @@ source=('git+https://github.com/SajeOne/alarm-cli.git')
 md5sums=('SKIP')
 
 package() {
-  cd "$srcdir/$pkgname-$pkgver"
+  cd "$srcdir/$pkgname"
   python setup.py install --root="$pkgdir/" --optimize=1
 }
 
