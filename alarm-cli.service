@@ -1,0 +1,11 @@
+[Unit]
+Description=Simple Alarm Server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/alarm-cli daemon
+ExecStop=/usr/bin/alarm-cli stop
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

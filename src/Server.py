@@ -73,5 +73,7 @@ class Server:
         self.serverThread.stop()
         self.soundThread.stop()
 
-    def __init__(self):
+    def __init__(self, jsonFile):
+        if jsonFile:
+            self.jsonFile = jsonFile
         self.alarms = Alarm.loadAlarms(self.jsonFile)

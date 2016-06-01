@@ -2,16 +2,16 @@
 
 import argparse
 import sys
+import os
+import os.path
 from alarmlib.Alarm import Alarm
 from alarmlib.Server import Server
 from alarmlib.Client import Client
 
-SAVE_FILE = "test.json"
 
 def parseArguments():
     parser = argparse.ArgumentParser(description="Simple alarm app for timespans and dates")
     parser.add_argument("action", help="Action you wish to perform")
-    parser.add_argument("-t", "--time", help="time Ex: 10h10m03s") # IF is not set do interactive time set
     args = parser.parse_args()
     return args
 
@@ -36,28 +36,45 @@ def userPrompt():
 
     return values
 
+def getSaveFile():
+    dir = os.environ.get('XDG_CONFIG_HOME')
+    if dir:
+        dir = dir + "/alarm-cli"
+        
+    else:
+        user = os.environ.get('USER')
+        if not user:
+            return False
+
+        dir = "/home/" + user + "/.config/alarm-cli"
+
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    return dir + "/alarms.json"
+
 args = parseArguments()
 
+SAVE_FILE = getSaveFile()
+if not SAVE_FILE:
+    print("'XDG_CONFIG_HOME' and 'USER' are not defined")
+    sys.exit(1)
+
 alarms = Alarm.loadAlarms(SAVE_FILE)
+
 
 if not alarms:
     alarms = list()
 
 if args.action:
     if args.action == "set":
-        if not args.time:
-            info = userPrompt()
-            if not info:
-                sys.exit(1)
+        info = userPrompt()
+        if not info:
+            sys.exit(1)
 
-            al = Alarm.alarmFromTime(info['hour'], info['minute'], info['second'], info['desc'])
-            alarms.append(al)
-            Alarm.saveAlarms(alarms, SAVE_FILE)
-        else:
-            al = Alarm.alarmFromTime(0, 10, 0, "test desc")
-            alarms.append(al)
-            Alarm.saveAlarms(alarms, SAVE_FILE)
-
+        al = Alarm.alarmFromTime(info['hour'], info['minute'], info['second'], info['desc'])
+        alarms.append(al)
+        Alarm.saveAlarms(alarms, SAVE_FILE)
                 
         client = Client()
         client.sendMessage("reload")
@@ -79,7 +96,7 @@ if args.action:
         Alarm.saveAlarms(alarms, SAVE_FILE)
         print("Alarm Deleted")
     elif args.action == "daemon":
-        daemon = Server()
+        daemon = Server(SAVE_FILE)
         daemon.startServer()
         print("daemon")
     elif args.action == "stop":
