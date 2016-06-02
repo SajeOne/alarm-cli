@@ -2,6 +2,7 @@
 
 import socket
 import subprocess
+import os
 from time import sleep
 from threading import Thread
 from alarmlib.Alarm import Alarm
@@ -46,7 +47,9 @@ class Server:
             dueAlarms = Alarm.checkAlarms(alarms)
             for item in dueAlarms:
                 waitForSound = True
-                subprocess.call(['notify-send', '--expire-time=3000', 'Alarm Sounding', item.description])
+                envVars = os.environ.copy()
+                envVars['DISPLAY'] = "0:0"
+                subprocess.Popen(['notify-send', '--expire-time=3000', 'Alarm Sounding', item.description], env=envVars)
 #                Alarm.playAlarm()
                 print("Alarm sounding! Desc: " + item.description + "\n")
 
