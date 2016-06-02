@@ -51,6 +51,8 @@ def getSaveFile():
     if not os.path.exists(dir):
         os.makedirs(dir)
 
+    print("dir: " + dir)
+
     return dir + "/alarms.json"
 
 args = parseArguments()
@@ -96,8 +98,8 @@ if args.action:
         Alarm.saveAlarms(alarms, SAVE_FILE)
         print("Alarm Deleted")
     elif args.action == "daemon":
-        daemon = Server(SAVE_FILE)
-        daemon.startServer()
+        daemon = Server()
+        daemon.startServer(SAVE_FILE)
         print("daemon")
     elif args.action == "stop":
         client = Client()

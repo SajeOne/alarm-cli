@@ -6,6 +6,7 @@ After=network.target
 ExecStart=/usr/bin/alarm-cli daemon
 ExecStop=/usr/bin/alarm-cli stop
 Restart=on-abort
+User=amnesia
 
 [Install]
 WantedBy=multi-user.target

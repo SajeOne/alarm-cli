@@ -11,7 +11,7 @@ class Server:
     port = 8089
     serverThread = None
     soundThread = None
-    jsonFile = "test.json"
+    jsonFile = ""
     stopFlag = False
 
     @classmethod
@@ -41,8 +41,11 @@ class Server:
 
             waitForSound = False
             alarms = Alarm.loadAlarms(self.jsonFile)
+            print("jsonfile: " + self.jsonFile)
             if not alarms:
                 continue
+
+            print("alarms len: " + str(len(alarms)))
 
             dueAlarms = Alarm.checkAlarms(alarms)
             for item in dueAlarms:
@@ -59,11 +62,14 @@ class Server:
 
 
     @classmethod
-    def startServer(self):
+    def startServer(self, givenJson):
+        if givenJson:
+            self.jsonFile = givenJson
+        self.alarms = Alarm.loadAlarms(self.jsonFile)
+
         serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         serversocket.bind(('localhost', self.port))
-        serversocket.listen(5) # become a server socket, maximum 5 connections     
-        print("Listening")
+        serversocket.listen(5) # become a server socket, maximum 5 connections     print("Listening")
 
         serverThread = Thread(target=self.handleMessages, args=(serversocket,))
         serverThread.start()
@@ -75,8 +81,3 @@ class Server:
     def stopServer(self):
         self.serverThread.stop()
         self.soundThread.stop()
-
-    def __init__(self, jsonFile):
-        if jsonFile:
-            self.jsonFile = jsonFile
-        self.alarms = Alarm.loadAlarms(self.jsonFile)
