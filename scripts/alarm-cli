@@ -51,8 +51,6 @@ def getSaveFile():
     if not os.path.exists(dir):
         os.makedirs(dir)
 
-    print("dir: " + dir)
-
     return dir + "/alarms.json"
 
 args = parseArguments()

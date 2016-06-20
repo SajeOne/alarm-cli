@@ -41,11 +41,8 @@ class Server:
 
             waitForSound = False
             alarms = Alarm.loadAlarms(self.jsonFile)
-            print("jsonfile: " + self.jsonFile)
             if not alarms:
                 continue
-
-            print("alarms len: " + str(len(alarms)))
 
             dueAlarms = Alarm.checkAlarms(alarms)
             for item in dueAlarms:
