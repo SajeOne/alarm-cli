@@ -17,6 +17,8 @@ class Server:
     @classmethod
     def handleMessages(self, serversocket):
         while True:
+            sleep(1) # Avoid busy waiting
+
             connection, address = serversocket.accept()
             buf = connection.recv(64)
             buf = buf.decode('UTF-8') 
@@ -35,6 +37,9 @@ class Server:
     @classmethod
     def handleSoundingAlarm(self):
         while True:
+            sleep(1) # Avoid busy waiting
+
+
             if self.stopFlag:
                 break
 
