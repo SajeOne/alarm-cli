@@ -91,10 +91,12 @@ if args.action:
         Alarm.saveAlarms(alarms, SAVE_FILE)
         print("Alarm Deleted")
     elif args.action == "clear":
-        alarms.pop(num - 1)
+        clearQueue = Alarm.checkAlarms(alarms)
+        for item in clearQueue:
+            alarms.remove(item)
 
         Alarm.saveAlarms(alarms, SAVE_FILE)
-        print("Alarm Deleted")
+        print("Past Alarms Cleared")
     elif args.action == "daemon":
         daemon = Server()
         daemon.startServer(SAVE_FILE)

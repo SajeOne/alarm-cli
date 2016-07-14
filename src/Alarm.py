@@ -4,6 +4,7 @@ import json
 #import wx // Temporarily remove wx dependency
 from json.decoder import JSONDecodeError
 import datetime
+import time
 
 class Alarm:
     timestamp = ""
@@ -66,7 +67,7 @@ class Alarm:
     @staticmethod
     def listAlarms(alarms):
         for index, item in enumerate(alarms):
-            print("Alarm " + str(index + 1) + "\nTimestamp: " + str(item.timestamp) + " Desc: " + str(item.description))
+            print("Alarm " + str(index + 1) + ": " + time.strftime('%I:%M:%S %p', time.localtime(item.timestamp)) + " : " + str(item.description))
 
     @staticmethod
     def checkAlarms(alarms):
