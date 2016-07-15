@@ -66,8 +66,23 @@ class Alarm:
 
     @staticmethod
     def listAlarms(alarms):
+        curTime = datetime.datetime.now() 
         for index, item in enumerate(alarms):
-            print("Alarm " + str(index + 1) + ": " + time.strftime('%I:%M:%S %p', time.localtime(item.timestamp)) + " : " + str(item.description))
+            timeLeft = ""
+
+            # If time < now: set timer text to "Passed"
+            futureTime = datetime.datetime.fromtimestamp(item.timestamp)
+            if datetime.datetime.now() > futureTime:
+                timeLeft = "Passed"
+            else:
+                diff = futureTime - curTime
+
+                # Get time difference in h,m,s format
+                hours, remainder = divmod(diff.seconds, 3600)
+                minutes, seconds = divmod(remainder, 60)
+                timeLeft = timeLeft + str(hours) + "h " + str(minutes) + "m " + str(seconds) + "s"
+
+            print("Alarm " + str(index + 1) + ": " + time.strftime('%I:%M %p', time.localtime(item.timestamp)) + " (" + timeLeft + ") : " + str(item.description))
 
     @staticmethod
     def checkAlarms(alarms):
