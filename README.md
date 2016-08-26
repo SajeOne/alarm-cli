@@ -18,9 +18,14 @@ stop - stops alarm watcher
 ```
 
 # Installation
-#### If you are on Arch Linux you can use the PKGBUILD to install alarm-cli (makepkg -irs)
+#### If you are on Arch Linux:
+```
+git clone https://github.com/SajeOne/alarm-cli.git
+cd alarm-cli
+makepkg -irs
+```
 
-#### Otherwise..
+#### Otherwise:
 
 ```
 git clone https://github.com/SajeOne/alarm-cli.git
