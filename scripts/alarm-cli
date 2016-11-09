@@ -12,6 +12,8 @@ from alarmlib.Client import Client
 def parseArguments():
     parser = argparse.ArgumentParser(description="Simple alarm app for timespans and dates")
     parser.add_argument("action", help="Action you wish to perform")
+    parser.add_argument("-t", "--time", help="When using `set` action use -t to specify timespan(Ex. 10h3m2s)")
+    parser.add_argument("-d", "--desc", help="used in combo with -t to sec description")
     args = parser.parse_args()
     return args
 
@@ -34,6 +36,37 @@ def userPrompt():
     description = input("A description for this alarm: ")
     values['desc'] = description
 
+    return values
+
+def parseTimeArg(time, desc=""):
+    curPoint = 0
+    values = {'hour': '0', 'minute':'0', 'second':'0'}
+    anyTime = False
+
+    for index, char in enumerate(args.time):
+        if char == "h":
+            if values['hour'] == '0':
+                values['hour'] = args.time[curPoint:index]
+                anyTime = True
+                curPoint = index + 1
+        elif char == "m":
+            if values['minute'] == '0':
+                values['minute'] = args.time[curPoint:index]
+                anyTime = True
+                curPoint = index + 1
+        elif char == "s":
+            if values['second'] == '0':
+                values['second'] = args.time[curPoint:index]
+                anyTime = True
+                curPoint = index + 1
+
+    if not anyTime:
+        print("No time span entered")
+        return False
+
+    values['desc'] = desc
+
+    print(values)
     return values
 
 def getSaveFile():
@@ -68,7 +101,13 @@ if not alarms:
 
 if args.action:
     if args.action == "set":
-        info = userPrompt()
+        if args.time:
+            if args.desc:
+                info = parseTimeArg(args.time, args.desc)
+            else:
+                info = parseTimeArg(args.time, args.desc)
+        else:
+            info = userPrompt()
         if not info:
             sys.exit(1)
 
