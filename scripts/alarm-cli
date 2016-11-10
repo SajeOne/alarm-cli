@@ -14,6 +14,7 @@ def parseArguments():
     parser.add_argument("action", help="Action you wish to perform")
     parser.add_argument("-t", "--time", help="When using `set` action use -t to specify timespan(Ex. 10h3m2s)")
     parser.add_argument("-d", "--desc", help="used in combo with -t to sec description")
+    parser.add_argument("-f", "--force", action="store_true", help="used in combo with `clear` action, deletes all alarms even if they are not passed")
     args = parser.parse_args()
     return args
 
@@ -130,12 +131,15 @@ if args.action:
         Alarm.saveAlarms(alarms, SAVE_FILE)
         print("Alarm Deleted")
     elif args.action == "clear":
-        clearQueue = Alarm.checkAlarms(alarms)
-        for item in clearQueue:
-            alarms.remove(item)
+        if args.force:
+            alarms = list()
+        else:
+            clearQueue = Alarm.checkAlarms(alarms)
+            for item in clearQueue:
+                alarms.remove(item)
 
         Alarm.saveAlarms(alarms, SAVE_FILE)
-        print("Past Alarms Cleared")
+        print("Alarms Cleared")
     elif args.action == "daemon":
         daemon = Server()
         daemon.startServer(SAVE_FILE)
