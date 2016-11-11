@@ -1,7 +1,7 @@
 # Maintainer: Shane "SajeOne" Brown <contact@shane-brown.ca>
 pkgname=alarm-cli
-pkgver=1
-pkgrel=1
+pkgver=1.1
+pkgrel=1.1
 pkgdesc="Simple alarm app for the CLI"
 arch=('any')
 url="https://github.com/SajeOne/alarm-cli"
