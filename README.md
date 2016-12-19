@@ -20,8 +20,7 @@ stop - stops alarm watcher
 # Installation
 #### If you are on Arch Linux:
 ```
-git clone https://github.com/SajeOne/alarm-cli.git
-cd alarm-cli
+wget https://gist.githubusercontent.com/SajeOne/a14763247157f02c6ad82006f6104adf/raw/2921f115d3902f64e11ede733897f3b170e3b6fc/alarm-cli-pkgbuild -O PKGBUILD
 makepkg -irs
 ```
 
