@@ -4,153 +4,202 @@ import argparse
 import sys
 import os
 import os.path
+from datetime import datetime, timedelta
 from alarmlib.Alarm import Alarm
 from alarmlib.Server import Server
 from alarmlib.Client import Client
 
 
 def parseArguments():
-    parser = argparse.ArgumentParser(description="Simple alarm app for timespans and dates")
-    parser.add_argument("action", help="Action you wish to perform")
-    parser.add_argument("-t", "--time", help="When using `set` action use -t to specify timespan(Ex. 10h3m2s)")
-    parser.add_argument("-d", "--desc", help="used in combo with -t to sec description")
-    parser.add_argument("-f", "--force", action="store_true", help="used in combo with `clear` action, deletes all alarms even if they are not passed")
-    args = parser.parse_args()
-    return args
+	parser = argparse.ArgumentParser(description="Simple alarm app for timespans and dates")
+	parser.add_argument("action", help="Action you wish to perform")
+	parser.add_argument("-s", "--span", help="When using `set` action use -t to specify timespan(Ex. 10h3m2s)")
+	parser.add_argument("-t", "--time", help="time of day when using `set`(Ex. 10:30PM)")
+	parser.add_argument("-d", "--desc", help="used in combo with -t to sec description")
+	parser.add_argument("-f", "--force", action="store_true", help="used in combo with `clear` action, deletes all alarms even if they are not passed")
+	args = parser.parse_args()
+	return args
 
 def userPrompt():
-    values = {}
-    hour = int(input("How many hours?: "))
-    values['hour'] = hour
-    minute = int(input("How many minutes?: "))
-    if minute > 59:
-        print("You can only have 59 minutes, use hours for longer time span")
-        return False
+	values = {}
+	hour = int(input("How many hours?: "))
+	values['hour'] = hour
+	minute = int(input("How many minutes?: "))
+	if minute > 59:
+		print("You can only have 59 minutes, use hours for longer time span")
+		return False
 
-    values['minute'] = minute
-    second = int(input("How many seconds?: "))
-    if second > 59:
-        print("You can only have 59 seconds, use minutes for longer time span")
-        return False
+	values['minute'] = minute
+	second = int(input("How many seconds?: "))
+	if second > 59:
+		print("You can only have 59 seconds, use minutes for longer time span")
+		return False
 
-    values['second'] = second
-    description = input("A description for this alarm: ")
-    values['desc'] = description
+	values['second'] = second
+	description = input("A description for this alarm: ")
+	values['desc'] = description
 
-    return values
+	return values
 
-def parseTimeArg(time, desc=""):
-    curPoint = 0
-    values = {'hour': '0', 'minute':'0', 'second':'0'}
-    anyTime = False
+def parseSpan(span, desc=""):
+	curPoint = 0
+	values = {'hour': '0', 'minute':'0', 'second':'0'}
+	anyTime = False
 
-    for index, char in enumerate(args.time):
-        if char == "h":
-            if values['hour'] == '0':
-                values['hour'] = args.time[curPoint:index]
-                anyTime = True
-                curPoint = index + 1
-        elif char == "m":
-            if values['minute'] == '0':
-                values['minute'] = args.time[curPoint:index]
-                anyTime = True
-                curPoint = index + 1
-        elif char == "s":
-            if values['second'] == '0':
-                values['second'] = args.time[curPoint:index]
-                anyTime = True
-                curPoint = index + 1
+	for index, char in enumerate(span):
+		if char == "h":
+			if values['hour'] == '0':
+				values['hour'] = span[curPoint:index]
+				anyTime = True
+				curPoint = index + 1
+		elif char == "m":
+			if values['minute'] == '0':
+				values['minute'] = span[curPoint:index]
+				anyTime = True
+				curPoint = index + 1
+		elif char == "s":
+			if values['second'] == '0':
+				values['second'] = span[curPoint:index]
+				anyTime = True
+				curPoint = index + 1
 
-    if not anyTime:
-        print("No time span entered")
-        return False
+	if not anyTime:
+		print("No time span entered")
+		return False
 
-    values['desc'] = desc
+	values['desc'] = desc
 
-    print(values)
-    return values
+	print(values)
+	return values
+
+def parseTime(time, desc=""):
+	curPoint = 0
+	values = {'hour': '0', 'minute':'0', 'second':'0'}
+	hour = -1
+	minute = -1
+	isAM = False
+
+	time = time.strip().lower()
+
+	curDt = datetime.now()
+
+	if "am" in time:
+		isAM = True
+		time = time.replace("am", "")
+	else:
+		time = time.replace("pm", "")
+
+	if len(time) == 2:
+		seekDt = curDt.replace(hour=int(time), minute=0, second=0)
+	elif ':' in time:
+		print("Time: " + time)
+		seekDt = datetime.strptime(time, "%I:%M")
+	else:
+		hour = int(time[:2])
+		minute = int(time[2:])
+
+	if seekDt <= curDt:
+		newHour = seekDt.hour + 12
+		seekDt = seekDt.replace(hour=newHour)
+
+	print(seekDt)
+
+	deltaTime = seekDt - curDt
+	print(str(type(deltaTime)))
+
+	totalSecs = deltaTime.total_seconds()
+	deltaMinutes = totalSecs / 60
+	deltaSecs = totalSecs % 60
+
+	values['hour'] = deltaTime.hours
+	values['minute'] = deltaTime.minutes
+	values['second'] = deltaTime.seconds
+
+	values['desc'] = desc
+	print(values)
+	return values
+
 
 def getSaveFile():
-    dir = os.environ.get('XDG_CONFIG_HOME')
-    if dir:
-        dir = dir + "/alarm-cli"
-        
-    else:
-        user = os.environ.get('USER')
-        if not user:
-            return False
+	dir = os.environ.get('XDG_CONFIG_HOME')
+	if dir:
+		dir = dir + "/alarm-cli"
+		
+	else:
+		user = os.environ.get('USER')
+		if not user:
+			return False
 
-        dir = "/home/" + user + "/.config/alarm-cli"
+		dir = "/home/" + user + "/.config/alarm-cli"
 
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+	if not os.path.exists(dir):
+		os.makedirs(dir)
 
-    return dir + "/alarms.json"
+	return dir + "/alarms.json"
 
 args = parseArguments()
 
 SAVE_FILE = getSaveFile()
 if not SAVE_FILE:
-    print("'XDG_CONFIG_HOME' and 'USER' are not defined")
-    sys.exit(1)
+	print("'XDG_CONFIG_HOME' and 'USER' are not defined")
+	sys.exit(1)
 
 alarms = Alarm.loadAlarms(SAVE_FILE)
 
 
 if not alarms:
-    alarms = list()
+	alarms = list()
 
 if args.action:
-    if args.action == "set":
-        if args.time:
-            if args.desc:
-                info = parseTimeArg(args.time, args.desc)
-            else:
-                info = parseTimeArg(args.time, args.desc)
-        else:
-            info = userPrompt()
-        if not info:
-            sys.exit(1)
+	if args.action == "set":
+		if args.span:
+			info = parseSpan(args.span, args.desc)
+		elif args.time:
+			info = parseTime(args.time, args.desc)
+		else:
+			info = userPrompt()
+		if not info:
+			sys.exit(1)
 
-        al = Alarm.alarmFromTime(info['hour'], info['minute'], info['second'], info['desc'])
-        alarms.append(al)
-        Alarm.saveAlarms(alarms, SAVE_FILE)
-                
-        client = Client()
-        client.sendMessage("reload")
-    elif args.action == "list":
-        Alarm.listAlarms(alarms)
-    elif args.action == "del":
-        Alarm.listAlarms(alarms)
-        num = int(input("Which alarm to delete(by ID)?: "))
-        if len(alarms) < num or num < 0:
-            print("Alarm ID does not exist")
-            sys.exit(1)
+		al = Alarm.alarmFromTime(info['hour'], info['minute'], info['second'], info['desc'])
+		alarms.append(al)
+		Alarm.saveAlarms(alarms, SAVE_FILE)
+				
+		client = Client()
+		client.sendMessage("reload")
+	elif args.action == "list":
+		Alarm.listAlarms(alarms)
+	elif args.action == "del":
+		Alarm.listAlarms(alarms)
+		num = int(input("Which alarm to delete(by ID)?: "))
+		if len(alarms) < num or num < 0:
+			print("Alarm ID does not exist")
+			sys.exit(1)
 
-        alarms.pop(num - 1)
-        Alarm.saveAlarms(alarms, SAVE_FILE)
-        print("Alarm Deleted")
-    elif args.action == "clear":
-        if args.force:
-            alarms = list()
-        else:
-            clearQueue = Alarm.checkAlarms(alarms)
-            for item in clearQueue:
-                alarms.remove(item)
+		alarms.pop(num - 1)
+		Alarm.saveAlarms(alarms, SAVE_FILE)
+		print("Alarm Deleted")
+	elif args.action == "clear":
+		if args.force:
+			alarms = list()
+		else:
+			clearQueue = Alarm.checkAlarms(alarms)
+			for item in clearQueue:
+				alarms.remove(item)
 
-        Alarm.saveAlarms(alarms, SAVE_FILE)
-        print("Alarms Cleared")
-    elif args.action == "daemon":
-        daemon = Server()
-        daemon.startServer(SAVE_FILE)
-        print("daemon")
-    elif args.action == "stop":
-        client = Client()
-        if not client.sendMessage("stop"):
-            sys.exit(1)
+		Alarm.saveAlarms(alarms, SAVE_FILE)
+		print("Alarms Cleared")
+	elif args.action == "daemon":
+		daemon = Server()
+		daemon.startServer(SAVE_FILE)
+		print("daemon")
+	elif args.action == "stop":
+		client = Client()
+		if not client.sendMessage("stop"):
+			sys.exit(1)
 
-    elif args.action == "testclient":
-        client = Client()
-        client.sendMessage("testmsg")
-    else:
-        print("Unrecognized action")
+	elif args.action == "testclient":
+		client = Client()
+		client.sendMessage("testmsg")
+	else:
+		print("Unrecognized action")
