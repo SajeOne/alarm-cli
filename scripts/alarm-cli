@@ -78,6 +78,7 @@ def parseTime(time, desc=""):
 	hour = -1
 	minute = -1
 	isAM = False
+	tfHour = False
 
 	time = time.strip().lower()
 
@@ -86,21 +87,23 @@ def parseTime(time, desc=""):
 	if "am" in time:
 		isAM = True
 		time = time.replace("am", "")
-	else:
+	elif "pm" in time:
 		time = time.replace("pm", "")
+	else:
+		tfHour = True
 
-	if len(time) == 2:
+	if len(time) <= 2:
 		seekDt = curDt.replace(hour=int(time), minute=0, second=0)
 	elif ':' in time:
 		print("Time: " + time)
 		seekDt = datetime.strptime(time, "%I:%M")
 	else:
-		hour = int(time[:2])
-		minute = int(time[2:])
+		minuteStr = time[2:]
+		hourStr = time.replace(minuteStr, '')
+		seekDt = curDt.replace(hour=int(hourStr), minute=int(minute), second=0)
 
 	if seekDt <= curDt:
-		newHour = seekDt.hour + 12
-		seekDt = seekDt.replace(hour=newHour)
+		seekdDt = seekDt + timedelta(days = 1)
 
 	print(seekDt)
 
@@ -108,12 +111,14 @@ def parseTime(time, desc=""):
 	print(str(type(deltaTime)))
 
 	totalSecs = deltaTime.total_seconds()
-	deltaMinutes = totalSecs / 60
-	deltaSecs = totalSecs % 60
+	totalMinutes = totalSecs / 60
+	deltaHours = totalMinutes / 60
+	deltaMinutes = totalMinutes % 60
+	deltaSecs = deltaMinutes % 60
 
-	values['hour'] = deltaTime.hours
-	values['minute'] = deltaTime.minutes
-	values['second'] = deltaTime.seconds
+	values['hour'] = deltaHours
+	values['minute'] = deltaMinutes
+	values['second'] = deltaSecs
 
 	values['desc'] = desc
 	print(values)
