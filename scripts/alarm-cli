@@ -69,7 +69,6 @@ def parseSpan(span, desc=""):
 
 	values['desc'] = desc
 
-	print(values)
 	return values
 
 def parseTime(time, desc=""):
@@ -93,35 +92,47 @@ def parseTime(time, desc=""):
 		tfHour = True
 
 	if len(time) <= 2:
-		seekDt = curDt.replace(hour=int(time), minute=0, second=0)
+		hour = int(time)
+		minute = 0
 	elif ':' in time:
-		print("Time: " + time)
-		seekDt = datetime.strptime(time, "%I:%M")
+		timeStr = time.split(':')
+		hour = int(timeStr[0])
+		minute = int(timeStr[1])
 	else:
 		minuteStr = time[2:]
 		hourStr = time.replace(minuteStr, '')
-		seekDt = curDt.replace(hour=int(hourStr), minute=int(minute), second=0)
+		hour = int(hourStr)
+		minute = int(minuteStr)
+
+	if tfHour:
+		if not (hour < 24 and hour >= 0) or not (minute < 60 and minute >= 0):
+			print("Time outside bounds of 24h time")
+			return False
+	else:
+		if not isAM:
+			if hour != 12:
+				hour = hour + 12
+		if isAM:
+			if hour == 12:
+				hour = 0
+
+	seekDt = curDt.replace(hour=hour, minute=minute, second=0)
+
 
 	if seekDt <= curDt:
-		seekdDt = seekDt + timedelta(days = 1)
-
-	print(seekDt)
+		seekDt = seekDt + timedelta(days = 1)
 
 	deltaTime = seekDt - curDt
-	print(str(type(deltaTime)))
 
-	totalSecs = deltaTime.total_seconds()
-	totalMinutes = totalSecs / 60
-	deltaHours = totalMinutes / 60
-	deltaMinutes = totalMinutes % 60
-	deltaSecs = deltaMinutes % 60
+	deltaHours = deltaTime.seconds // 3600
+	deltaMinutes = (deltaTime.seconds // 60) % 60
+	deltaSecs = deltaTime.seconds % 60
 
 	values['hour'] = deltaHours
 	values['minute'] = deltaMinutes
 	values['second'] = deltaSecs
 
 	values['desc'] = desc
-	print(values)
 	return values
 
 
@@ -194,6 +205,12 @@ if args.action:
 
 		Alarm.saveAlarms(alarms, SAVE_FILE)
 		print("Alarms Cleared")
+	elif args.action == "nuke":
+		confirm = input("Are you sure? This will delete ALL ALARMS!(y/n): ")
+		if confirm == "y":
+			del alarms[:]
+			Alarm.saveAlarms(alarms, SAVE_FILE)
+			print("All alarms deleted")
 	elif args.action == "daemon":
 		daemon = Server()
 		daemon.startServer(SAVE_FILE)
